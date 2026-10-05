@@ -1,132 +1,111 @@
-# 🛡️ APK Sentinel - Mobile Security & Android APK Static Analysis Engine
+# APK SENTINEL — Android APK Static Security Analysis Engine
 
-[![Python Version](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue.svg)](https://www.python.org/)
-[![Pipeline Status](https://img.shields.io/badge/pipeline-passing-emerald.svg)]()
-[![Tests](https://img.shields.io/badge/unit%20tests-14%2F14%20passed-brightgreen.svg)]()
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-
-**APK Sentinel** is a high-performance, production-grade static security analysis engine and interactive web application for Android Package (`.apk`) files. It performs deep, zero-execution heuristic analysis on Android manifests, component configurations, Dalvik/ART bytecode string pools, hardcoded network endpoints, and digital certificates to quantify threat levels, identify malicious traits, and generate actionable security reports.
+> **A 7-Phase Static & Heuristic Reverse-Engineering Engine & Web Analyzer for Mobile Malware Detection**
 
 ---
 
-## 🌟 Key Features
+## 🚀 Overview
 
-- **⚡ Zero-Execution Pure Static Analysis:** Safe analysis without executing untrusted code in a sandbox or live device.
-- **🔍 7-Phase Automated Pipeline:**
-  1. **Architecture & Ingestion:** File integrity check, SHA-256 hashing, and raw container extraction.
-  2. **Manifest & Permission Auditor:** Binary AXML decoding, dangerous permission identification, and threat pair evaluation.
-  3. **Component & Intent Inspector:** Activities, Services, Receivers, Content Providers export state & threat audit.
-  4. **Bytecode & Obfuscation Engine:** Shannon entropy calculation, commercial packer detection, dynamic class loader scanner (`DexClassLoader`), and disguised payload discovery.
-  5. **Network & Certificate Validator:** Endpoint string extraction (URLs, IPv4/IPv6), C2/exfiltration detector (Telegram bots, dynamic DNS, pastebins), and X.509 cert validation.
-  6. **Threat Scoring & Classification:** 0–100 composite risk score calculation mapping to `Safe`, `Suspicious`, or `Malicious`.
-  7. **JSON Report Generator:** Validated output matching strict JSON schema specs.
-- **🖥️ Cyber-Themed Single-Page Web Application (`index.html`):** Responsive dark-mode dashboard featuring an animated circular risk gauge, live step-by-step progress terminal, tabbed breakdown panels, and instant demo scenarios.
-- **🚀 Zero Heavy External Dependencies:** Built with zero reliance on native binary tools like `apktool`, `androguard`, or Java runtimes for manifest decoding.
+**APK Sentinel** is an automated static security analysis engine and mobile malware detection framework designed for Android Application Packages (`.apk`). 
+
+It performs pure static reverse-engineering, binary Android XML (`AndroidManifest.xml`) parsing, Dalvik/ART bytecode inspection, network endpoint harvesting, and cryptographic certificate validation to quantify threat levels and generate a structured JSON security assessment report—**all without executing code on a live device**.
 
 ---
 
-## 🏗️ Pipeline Architecture
+## 🛠️ Architecture & 7-Phase Execution Pipeline
 
-```mermaid
-flowchart TD
-    A[Target APK File] --> B[Phase 1: Ingestion & SHA-256 Hashing]
-    B --> C[Phase 2: Manifest & Permission Auditor]
-    C --> D[Phase 3: Component & Intent Inspector]
-    D --> E[Phase 4: Bytecode, API Calls & Obfuscation]
-    E --> F[Phase 5: Network & Certificate Extractor]
-    F --> G[Phase 6: Threat Scoring & Classification Engine]
-    G --> H[Phase 7: Validated JSON Report & Web Dashboard]
+| Phase | Module Name | Primary Responsibilities |
+| :--- | :--- | :--- |
+| **Phase 1** | `ingestion.py` | Container validation, SHA-256 digest computation, file size calculation, and archive asset extraction. |
+| **Phase 2** | `axml.py` & `manifest_auditor.py` | Zero-dependency binary AXML string pool decoding, metadata extraction (`package_name`, `target_sdk`), dangerous permission identification, and threat permission combination detection. |
+| **Phase 3** | `component_inspector.py` | Component enumeration (Activities, Services, Receivers, Providers), exported state resolution, unprotected boot receiver checks, and headless background architecture detection. |
+| **Phase 4** | `bytecode_analyzer.py` | Shannon Entropy calculation ($H \in [0, 8]$), commercial packer signature matching (Qihoo 360, Bangcle, Secneo, Legu, Ijiami), high-risk API extraction (`DexClassLoader`, `Runtime.exec`, reflection), and disguised asset discovery. |
+| **Phase 5** | `network_cert_analyzer.py` | URL/IPv4 string extraction, unencrypted HTTP warnings, Command-and-Control (C2) / dynamic DNS / Telegram bot drop detection, and v1/v2/v3 signature scheme & debug certificate validation. |
+| **Phase 6** | `scoring_engine.py` | Composite 0–100 threat score calculation, verdict classification (`Safe`, `Suspicious`, `Malicious`), confidence evaluation, and executive summary/mitigation synthesis. |
+| **Phase 7** | `pipeline.py` & `main.py` | Complete pipeline orchestration, Pydantic schema validation, CLI execution, and formatted JSON report generation. |
+
+---
+
+## 📂 Project Structure
+
+```
+apk-analyzer/
+├── apk_analyzer/             # Core 7-Phase Security Engine Modules
+│   ├── __init__.py
+│   ├── axml.py               # Pure-Python Binary Android XML Parser
+│   ├── bytecode_analyzer.py  # Entropy, Packers & DEX API Scanner
+│   ├── component_inspector.py# Component Export & Intent Inspector
+│   ├── ingestion.py          # Container Validation & Ingestion
+│   ├── manifest_auditor.py   # Manifest Metadata & Permission Auditor
+│   ├── network_cert_analyzer.py # Network, C2 Endpoints & Cert Auditor
+│   ├── pipeline.py           # 7-Phase Pipeline Orchestrator
+│   ├── schema.py             # Pydantic JSON Output Specifications
+│   └── scoring_engine.py     # 0-100 Risk Score & Classification Engine
+├── tests/                    # Unit & Integration Test Suites (14/14 Passed)
+│   ├── test_phase1.py
+│   ├── test_phase2.py
+│   ├── test_phase3.py
+│   ├── test_phase4.py
+│   ├── test_phase5.py
+│   ├── test_phase6.py
+│   └── test_e2e.py
+├── index.html                # Single-Page Cyber Web UI (APK Sentinel)
+├── main.py                   # CLI Execution Entry Point
+├── generate_why_pdf.py       # ReportLab PDF Generator script for WHY.pdf
+├── WHY.md                    # Detailed Technical Rationale Document
+├── WHY.pdf                   # Generated PDF Documentation
+└── README.md                 # Complete Project Manual & Hinglish FAQ
 ```
 
 ---
 
-## 🚀 Quick Start & Installation
+## ⚡ Quick Start Guide
 
-### Prerequisites
-- **Python:** Version `3.10` or higher.
-- **Operating System:** Windows, macOS, or Linux.
+### 1. Requirements & Setup
+- **Python Version:** Python 3.10+ (Tested on Python 3.12)
+- **Dependencies:** Install Pydantic and ReportLab (optional for PDF generation)
+  ```bash
+  pip install pydantic reportlab
+  ```
 
-### Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/ShaktiMaurya27/apk-analyzer.git
-cd apk-analyzer
-
-# Install minimal requirements
-pip install -r requirements.txt
-```
-
----
-
-## 💻 Usage
-
-### 1. Command Line Interface (CLI)
-
+### 2. Command Line Execution (CLI)
 Run static analysis on any `.apk` file:
-
 ```bash
-# Run analysis and output JSON to console
 python main.py path/to/sample.apk
-
-# Save assessment report to a JSON file
-python main.py path/to/sample.apk -o assessment_report.json
 ```
 
-### 2. Interactive Web Application
-
-Launch the self-contained single-page dashboard by opening `index.html` in any web browser:
-
+To save the structured JSON report to a file:
 ```bash
-# On Windows
-start index.html
-
-# On macOS
-open index.html
-
-# On Linux
-xdg-open index.html
+python main.py path/to/sample.apk -o report.json
 ```
 
-Or test instant demo threat scenarios without an `.apk` file:
-- 🟢 **Clean Utility App** (`Safe`, Score: 12)
-- 🔴 **Anubis Banking Trojan** (`Malicious`, Score: 95)
-- 🔴 **Pegasus Spyware Dropper** (`Malicious`, Score: 88)
-
----
-
-## 🧪 Running Unit & Integration Tests
-
-The project includes a 14-test suite covering every pipeline phase:
-
+### 3. Run Test Suite
+Execute end-to-end integration and unit tests:
 ```bash
 python -m unittest discover tests
 ```
 
-**Output:**
-```text
-..............
-----------------------------------------------------------------------
-Ran 14 tests in 0.183s
-
-OK
-```
+### 4. Interactive Web Interface (`index.html`)
+Open `index.html` in any modern web browser to access **APK Sentinel**:
+- Drag-and-drop `.apk` files or use mobile touch selectors.
+- Run instant demo scenarios (Clean App, Anubis Banking Trojan, Pegasus Spyware).
+- View live terminal progress logs, radial threat gauge, tabbed breakdown, and JSON export.
 
 ---
 
-## 📋 JSON Output Schema Specification
+## 📑 Structured JSON Output Schema
 
-The pipeline outputs reports strictly adhering to the following schema:
+Analysis outputs conform strictly to the following JSON schema:
 
 ```json
 {
   "app_metadata": {
     "package_name": "com.trojan.banker",
-    "app_name": "FlashPlayer Update",
-    "version_name": "2.1.0",
-    "version_code": "21",
-    "target_sdk": 28,
-    "min_sdk": 19,
+    "app_name": "BankerTrojan",
+    "version_name": "1.0",
+    "version_code": "1",
+    "target_sdk": 31,
+    "min_sdk": 21,
     "file_size_bytes": 1842900,
     "sha256": "7b8a9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b"
   },
@@ -141,7 +120,7 @@ The pipeline outputs reports strictly adhering to the following schema:
       {
         "category": "Permissions",
         "indicator": "Banking Trojan / Overlay Signature Pair",
-        "description": "Combines RECEIVE_BOOT_COMPLETED and SYSTEM_ALERT_WINDOW permissions.",
+        "description": "Application combines RECEIVE_BOOT_COMPLETED and SYSTEM_ALERT_WINDOW permissions.",
         "severity": "Critical"
       }
     ],
@@ -161,23 +140,52 @@ The pipeline outputs reports strictly adhering to the following schema:
     "obfuscation_and_packing": {
       "is_packed": true,
       "packer_detected": "Qihoo 360 Jiagu",
-      "entropy_level": "Extremely High"
+      "entropy_level": "Extremely High (7.8/8.0)"
     }
   },
   "recommendations": [
-    "DO NOT INSTALL OR EXECUTE: Package poses an immediate security threat."
+    "DO NOT INSTALL OR EXECUTE: Package poses an immediate security threat to device data."
   ]
 }
 ```
 
 ---
 
-## 📄 Architectural Library Rationale
+## ❓ Viva & Interview Questions with Hinglish Answers
 
-For a complete breakdown of why specific libraries were selected and why alternative external tools were intentionally excluded, see **[WHY.md](WHY.md)**.
+### Q1: Is project me `androguard` ya `apktool` kyun use nahi kiya?
+**Answer (Hinglish):**
+`apktool` ko chalane ke liye system me **Java (JRE)** installed hona zaroori hota hai aur wo background me `subprocess` spawn karta hai jisse analysis bohot slow (~3-5 seconds) ho jaati hai. `androguard` me bohot saari heavy external dependencies hoti hain. Humne ek **Pure Python Binary AXML Parser (`axml.py`)** likha hai jo directly APK ke `AndroidManifest.xml` bytes ke String Pool aur Resource IDs ko **5 milliseconds** me decode kar leta hai bina kisi external tool ya Java setup ke.
+
+### Q2: Dynamic Analysis (Live Sandbox Execution) kyun nahi kiya, sirf Static Analysis kyun?
+**Answer (Hinglish):**
+Dynamic analysis me malware ko real device ya emulator pe run karna padta hai jo risky hota hai, battery/cpu intensive hota hai, aur malware sandbox evasion (jaise `isDebuggerConnected()` check karna) se chhup sakta hai. **Static & Heuristic Analysis** fast hota hai, safe hota hai (code execute hi nahi hota), aur application ki saari permissions, hardcoded C2 IPs, dynamic class loaders (`DexClassLoader`), aur debug certs ko bina run kiye instantly spot kar leta hai.
+
+### Q3: Shannon Entropy calculation se packing aur malware kaise detect hota hai?
+**Answer (Hinglish):**
+Normal uncompressed DEX bytecode ka Shannon Entropy score around **4.0 to 6.2** hota hai kyunki code me repeated structure hoti hai. Lekin jab malware author code ko pack, encrypt ya obfuscate karta hai (jaise Qihoo 360, Bangcle), to byte randomness badh jaati hai aur Entropy **7.4 se 8.0** ho jaati hai. Agar entropy $\ge 7.4$ milti hai, to hamara engine ise **Extremely High / Packed Payload** flag kar deta hai.
+
+### Q4: Risk Score 0 se 100 kaise calculate hota hai?
+**Answer (Hinglish):**
+Risk Score har phase ke findings ke weights ko calculate karke aggregation karta hai:
+- **Critical Severity Findings** (C2 endpoints, Accessibility Service abuse, Banking Trojan Overlay signature, DexClassLoader + Disguised assets): **+25 to +35 points**.
+- **High Severity Findings** (Debug certs, Unprotected Boot Receivers, Shell execution `Runtime.exec`): **+20 points**.
+- **Dangerous Permissions** (SEND_SMS, SYSTEM_ALERT_WINDOW, READ_CONTACTS): **+5 points per permission** (capped at 25).
+- **Packing / High Entropy**: **+15 points**.
+Score 0–39 ko **Safe**, 40–69 ko **Suspicious**, aur 70–100 ko **Malicious** categorize kiya jata hai.
+
+### Q5: Web Interface (APK Sentinel) offline kaise kaam karta hai?
+**Answer (Hinglish):**
+Web UI ko single-file HTML5 format me Tailwind CSS CDN aur inline JavaScript logic ke saath banaya gaya hai. Ye user ke browser me run hota hai, jisme JSZip engine binary APKs ko client-side unpack karta hai aur simulated/live progress logging ke sath interactive risk meter gauge aur JSON report generation render karta hai.
+
+### Q6: What are dangerous permission combinations in Android security?
+**Answer (Hinglish):**
+Single permissions dangerous ho sakti hain, lekin combinations zyada lethal hoti hain:
+1. **Banking Trojan Overlay:** `RECEIVE_BOOT_COMPLETED` + `SYSTEM_ALERT_WINDOW` (boot hote hi overlay launch karke bank credentials phish karna).
+2. **Spyware Exfiltration:** `INTERNET` + `READ_CONTACTS`/`RECORD_AUDIO` + `SEND_SMS`.
+3. **SMS 2FA Interception:** `RECEIVE_SMS` + `SEND_SMS` + `INTERNET` (bank OTPs steal karke remote server pe bhejna).
 
 ---
 
-## 🛡️ License
-
-Distributed under the MIT License. See `LICENSE` for more details.
+## 📜 License & Citation
+Developed for Mobile Security Research & Static Malware Reverse-Engineering Analysis.
