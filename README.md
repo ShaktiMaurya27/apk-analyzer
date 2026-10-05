@@ -51,6 +51,9 @@ apk-analyzer/
 │   └── test_e2e.py
 ├── index.html                # Responsive Web Interface (Drag-and-Drop & Mobile Picker)
 ├── main.py                   # Command Line Interface (CLI) Entry Point
+├── generate_why_pdf.py       # ReportLab PDF Generator Script for WHY.pdf
+├── WHY.md                    # Detailed Technical Rationale Document
+├── WHY.pdf                   # Generated Technical Justification PDF
 └── README.md                 # Complete Technical Manual & Hinglish FAQ
 ```
 
