@@ -3,118 +3,150 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>APK Sentinel - Mobile Malware Detection System</title>
+  <title>APK Analyzer - Minimalist Black & Green Security Engine</title>
 
   <!-- Tailwind CSS CDN -->
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
 
-  <!-- JSZip for Client-Side APK Unpacking -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-
   <style>
-    /* Custom Cyber Theme Glows & Animations */
-    @keyframes pulse-glow {
-      0%, 100% { box-shadow: 0 0 15px rgba(16, 185, 129, 0.3); }
-      50% { box-shadow: 0 0 30px rgba(16, 185, 129, 0.6); }
+    /* Minimalist Black, Green & Light Green Cyber Palette */
+    :root {
+      --bg-black: #03070d;
+      --card-black: #090e17;
+      --green-primary: #10b981;
+      --green-light: #a7f3d0;
+      --green-mint: #6ee7b7;
+      --green-glow: rgba(16, 185, 129, 0.4);
     }
-    @keyframes scanline {
-      0% { transform: translateY(-100%); }
-      100% { transform: translateY(1000%); }
-    }
-    .animate-scanline {
-      animation: scanline 4s linear infinite;
-    }
-    .glow-safe { box-shadow: 0 0 20px rgba(16, 185, 129, 0.4); }
-    .glow-suspicious { box-shadow: 0 0 20px rgba(245, 158, 11, 0.4); }
-    .glow-malicious { box-shadow: 0 0 25px rgba(239, 68, 68, 0.6); }
-    
-    /* Scrollbar styling */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #0f172a; }
-    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: #475569; }
 
-    /* Print styles */
-    @media print {
-      body { background: #ffffff !important; color: #000000 !important; }
-      .no-print { display: none !important; }
-      .print-only { display: block !important; }
+    body {
+      background-color: var(--bg-black);
+      color: #f1f5f9;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
+
+    /* Animated Flying Ladybug Keyframe Flight Path */
+    @keyframes ladybugFly {
+      0% {
+        transform: translate(-100px, 40px) rotate(15deg) scale(0.9);
+      }
+      25% {
+        transform: translate(25vw, 15px) rotate(-10deg) scale(1);
+      }
+      50% {
+        transform: translate(50vw, 60px) rotate(20deg) scale(1.05);
+      }
+      75% {
+        transform: translate(75vw, 20px) rotate(-5deg) scale(0.95);
+      }
+      100% {
+        transform: translate(calc(100vw + 100px), 50px) rotate(10deg) scale(0.9);
+      }
+    }
+
+    /* Bacteria Floating Pulse */
+    @keyframes bacteriaFloat {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-8px) rotate(5deg); }
+    }
+
+    .animate-ladybug {
+      animation: ladybugFly 18s linear infinite;
+    }
+
+    .animate-bacteria {
+      animation: bacteriaFloat 4s ease-in-out infinite;
+    }
+
+    .glow-border {
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.15);
+    }
+
+    .glow-border:hover {
+      box-shadow: 0 0 25px rgba(16, 185, 129, 0.35);
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #03070d; }
+    ::-webkit-scrollbar-thumb { background: #064e3b; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #10b981; }
   </style>
 </head>
-<body class="bg-[var(--background,#090d16)] text-slate-100 antialiased min-h-screen flex flex-col font-sans selection:bg-emerald-500 selection:text-black">
+<body class="bg-[#03070d] text-slate-100 min-h-screen flex flex-col font-sans selection:bg-emerald-400 selection:text-black relative overflow-x-hidden">
 
-  <!-- Header -->
-  <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-50">
+  <!-- ANIMATED FLYING LADYBUG STICKER -->
+  <div id="ladybugContainer" class="fixed top-12 left-0 z-40 animate-ladybug pointer-events-auto cursor-pointer group" onclick="popLadybugAlert()" title="Click Ladybug Security Patrol!">
+    <div class="relative w-12 h-12 flex items-center justify-center">
+      <img src="assets/ladybug.png" alt="Flying Ladybug Security Patrol" class="w-10 h-10 object-contain drop-shadow-[0_0_10px_rgba(239,68,68,0.7)] group-hover:scale-125 transition-transform" />
+      <span class="absolute -bottom-4 text-[9px] font-mono bg-emerald-950 text-emerald-300 border border-emerald-600 px-1 py-0.2 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">PATROL ACTIVE 🐞</span>
+    </div>
+  </div>
+
+  <!-- Header Bar -->
+  <header class="border-b border-emerald-900/60 bg-[#060a12]/90 backdrop-blur sticky top-0 z-30">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
       
       <!-- Brand Logo & Title -->
       <div class="flex items-center gap-3">
-        <div class="relative p-2 bg-slate-900 border border-emerald-500/30 rounded-lg text-emerald-400">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="relative p-2 bg-black border border-emerald-500/40 rounded-xl text-emerald-400">
+          <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
           </svg>
         </div>
         <div>
-          <h1 class="font-bold text-lg tracking-wider text-slate-100 flex items-center gap-2">
+          <h1 class="font-extrabold text-lg tracking-wider text-slate-100 flex items-center gap-2 font-mono">
             APK ANALYZER
-            <span class="text-xs font-mono font-normal px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800">v2.4 STATIC</span>
+            <span class="text-[11px] font-mono font-normal px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800">v2.4 MINIMAL</span>
           </h1>
-          <p class="text-xs text-slate-400">Mobile Malware & Static Reverse-Engineering Engine</p>
+          <p class="text-xs text-emerald-400/80 font-mono">Minimalist Black & Green Security Assessment Suite</p>
         </div>
       </div>
 
-      <!-- Header Status & Action Controls -->
+      <!-- Action Buttons -->
       <div class="flex items-center gap-3">
-        <div class="hidden md:flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-xs font-mono">
+        <div class="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-black border border-emerald-900/80 text-xs font-mono">
           <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-          <span class="text-slate-300">STATIC PIPELINE ONLINE</span>
+          <span class="text-emerald-300">ENGINE ONLINE</span>
         </div>
-        
-        <button onclick="exportJSONReport()" id="exportBtn" disabled class="disabled:opacity-40 disabled:cursor-not-allowed px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 border border-slate-700 transition flex items-center gap-1.5">
-          <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-          </svg>
-          JSON Report
-        </button>
 
-        <button onclick="window.print()" id="printBtn" disabled class="disabled:opacity-40 disabled:cursor-not-allowed px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 border border-slate-700 transition flex items-center gap-1.5">
-          <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
-          </svg>
-          Print Audit
+        <button onclick="exportJSONReport()" id="exportBtn" disabled class="disabled:opacity-40 disabled:cursor-not-allowed px-3.5 py-1.5 rounded-lg bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-700/60 text-emerald-200 text-xs font-mono font-medium transition flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+          Export JSON
         </button>
       </div>
 
     </div>
   </header>
 
-  <!-- Main Content -->
-  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+  <!-- Main Content Area -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 relative z-10">
 
-    <!-- Scenario Switcher & Quick Upload Bar -->
-    <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-4 shadow-xl">
-      <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+    <!-- DEMO SCENARIOS BAR WITH BACTERIA STICKER -->
+    <div class="bg-[#090e17] border border-emerald-900/60 rounded-xl p-4 shadow-2xl relative overflow-hidden">
+      
+      <!-- Bacteria Sticker 1 -->
+      <img src="assets/bacteria.png" alt="Bacteria Security Sticker" class="absolute -right-3 -top-3 w-16 h-16 object-contain opacity-30 animate-bacteria pointer-events-none filter drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+
+      <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 relative z-10">
         <div>
-          <h2 class="text-sm font-semibold text-slate-200 flex items-center gap-2">
-            <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-            </svg>
-            Instant Demo Scenarios (No APK File Required)
+          <h2 class="text-sm font-semibold text-emerald-300 flex items-center gap-2 font-mono">
+            <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            Instant Threat Demo Profiles
           </h2>
-          <p class="text-xs text-slate-400 mt-0.5">Click any threat scenario below to run instant static analysis simulation.</p>
+          <p class="text-xs text-slate-400 mt-0.5">Test the security analysis pipeline instantly without needing a local .apk file.</p>
         </div>
 
         <div class="flex flex-wrap gap-2 w-full md:w-auto">
-          <button onclick="loadScenario('safe')" class="flex-1 md:flex-none px-3 py-1.5 rounded-lg bg-emerald-950/60 hover:bg-emerald-900 border border-emerald-700/50 text-emerald-300 text-xs font-mono font-medium transition text-left flex items-center gap-2">
+          <button onclick="loadScenario('safe')" class="flex-1 md:flex-none px-3.5 py-1.5 rounded-lg bg-black hover:bg-emerald-950 border border-emerald-700/60 text-emerald-300 text-xs font-mono transition flex items-center gap-2">
             <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
             Clean Utility App (Safe)
           </button>
-          <button onclick="loadScenario('banker')" class="flex-1 md:flex-none px-3 py-1.5 rounded-lg bg-rose-950/60 hover:bg-rose-900 border border-rose-700/50 text-rose-300 text-xs font-mono font-medium transition text-left flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-rose-400"></span>
+          <button onclick="loadScenario('banker')" class="flex-1 md:flex-none px-3.5 py-1.5 rounded-lg bg-black hover:bg-emerald-950 border border-rose-800/80 text-rose-300 text-xs font-mono transition flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-rose-500"></span>
             Anubis Banking Trojan
           </button>
-          <button onclick="loadScenario('spyware')" class="flex-1 md:flex-none px-3 py-1.5 rounded-lg bg-amber-950/60 hover:bg-amber-900 border border-amber-700/50 text-amber-300 text-xs font-mono font-medium transition text-left flex items-center gap-2">
+          <button onclick="loadScenario('spyware')" class="flex-1 md:flex-none px-3.5 py-1.5 rounded-lg bg-black hover:bg-emerald-950 border border-amber-800/80 text-amber-300 text-xs font-mono transition flex items-center gap-2">
             <span class="w-2 h-2 rounded-full bg-amber-400"></span>
             Pegasus Spyware Dropper
           </button>
@@ -122,102 +154,101 @@
       </div>
     </div>
 
-    <!-- Dual File Upload Dropzone (Desktop Drag&Drop + Mobile Touch File Picker) -->
-    <div id="dropzone" class="relative group border-2 border-dashed border-slate-700 hover:border-emerald-500/60 rounded-2xl bg-slate-900/50 hover:bg-slate-900/80 transition-all p-8 text-center cursor-pointer overflow-hidden shadow-2xl">
-      <!-- Animated Scanline Overlay -->
-      <div class="absolute inset-0 bg-gradient-to-b from-transparent via-emerald-500/5 to-transparent animate-scanline pointer-events-none opacity-40"></div>
+    <!-- DUAL UPLOAD ZONE (DESKTOP DRAG & DROP + MOBILE TOUCH SELECTOR) -->
+    <div id="dropzone" class="relative group border-2 border-dashed border-emerald-900/80 hover:border-emerald-400 rounded-2xl bg-[#070c14] hover:bg-[#0a121f] transition-all p-8 text-center cursor-pointer overflow-hidden glow-border">
       
-      <input type="file" id="fileInput" accept=".apk" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onchange="handleFileSelect(event)">
+      <!-- Bacteria Sticker 2 inside dropzone -->
+      <img src="assets/bacteria.png" alt="Bacteria Bio Hazard Sticker" class="absolute left-4 bottom-4 w-12 h-12 object-contain opacity-25 animate-bacteria pointer-events-none" />
+
+      <input type="file" id="fileInput" accept=".apk" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20" onchange="handleFileSelect(event)">
       
-      <div class="flex flex-col items-center justify-center space-y-4 relative z-0">
-        <div class="w-16 h-16 rounded-full bg-slate-800/80 border border-slate-700 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">
+      <div class="flex flex-col items-center justify-center space-y-4 relative z-10">
+        <div class="w-16 h-16 rounded-2xl bg-black border border-emerald-600/50 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform shadow-[0_0_20px_rgba(16,185,129,0.2)]">
           <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
           </svg>
         </div>
 
         <div>
-          <p class="text-slate-200 font-semibold text-base">
-            <span class="text-emerald-400 underline decoration-emerald-500/50 underline-offset-4">Drag and drop your Android APK file</span> or tap to browse
+          <p class="text-slate-100 font-bold text-base font-mono">
+            <span class="text-emerald-400 underline decoration-emerald-500/50 underline-offset-4">Drag and drop your Android APK</span> or tap to browse
           </p>
           <p class="text-xs text-slate-400 mt-1">Pure static heuristic analysis. Code is never executed on a live device.</p>
         </div>
 
-        <div class="flex items-center gap-4 text-xs text-slate-400 font-mono">
-          <span class="flex items-center gap-1"><svg class="w-3.5 h-3.5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/></svg> .APK Ingestion</span>
-          <span class="flex items-center gap-1"><svg class="w-3.5 h-3.5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/></svg> Binary AXML Decoding</span>
-          <span class="flex items-center gap-1"><svg class="w-3.5 h-3.5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/></svg> DEX API Extraction</span>
+        <div class="flex flex-wrap justify-center items-center gap-4 text-xs font-mono text-emerald-400/80">
+          <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> APK Ingestion</span>
+          <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Binary AXML Decoding</span>
+          <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> DEX Bytecode Scan</span>
         </div>
       </div>
     </div>
 
-    <!-- Live Analysis Progress & Terminal Logs -->
-    <div id="progressSection" class="hidden bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-xl space-y-4">
+    <!-- LIVE STEP-BY-STEP SCAN PROGRESS TERMINAL -->
+    <div id="progressSection" class="hidden bg-[#090e17] border border-emerald-900/80 rounded-xl p-5 shadow-2xl space-y-4">
       <div class="flex items-center justify-between text-xs font-mono">
         <span class="text-emerald-400 font-semibold flex items-center gap-2">
           <svg class="w-4 h-4 animate-spin text-emerald-400" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
-          STATIC PIPELINE EXECUTING...
+          HEURISTIC PIPELINE SCANNING...
         </span>
-        <span id="progressPercent" class="text-slate-300">0%</span>
+        <span id="progressPercent" class="text-emerald-300">0%</span>
       </div>
 
-      <!-- Progress Bar -->
-      <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
-        <div id="progressBar" class="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-500 transition-all duration-300 w-0"></div>
+      <div class="w-full h-2 bg-black rounded-full overflow-hidden border border-emerald-950">
+        <div id="progressBar" class="h-full bg-gradient-to-r from-emerald-600 via-emerald-400 to-green-300 transition-all duration-300 w-0"></div>
       </div>
 
-      <!-- Live Log Terminal Box -->
-      <div id="terminalLog" class="h-32 bg-slate-950 border border-slate-800/80 rounded-lg p-3 font-mono text-xs text-slate-300 overflow-y-auto space-y-1">
-        <div class="text-slate-500">[SYSTEM] Pipeline initialized. Awaiting input stream...</div>
+      <div id="terminalLog" class="h-32 bg-black border border-emerald-900/60 rounded-lg p-3 font-mono text-xs text-emerald-300 overflow-y-auto space-y-1">
+        <div class="text-slate-500">[SYSTEM] Engine online. Awaiting stream...</div>
       </div>
     </div>
 
-    <!-- Analysis Results Container (Hidden until scan finishes) -->
+    <!-- ANALYSIS RESULTS CONTAINER -->
     <div id="resultsSection" class="hidden space-y-6">
 
-      <!-- Executive Verdict & Risk Gauge Hero Card -->
-      <div id="verdictCard" class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl relative overflow-hidden transition-all duration-500">
+      <!-- Executive Verdict & Risk Score Hero Card -->
+      <div id="verdictCard" class="bg-[#090e17] border border-emerald-900/80 rounded-2xl p-6 shadow-2xl relative overflow-hidden">
         
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+        <!-- Bacteria Sticker 3 -->
+        <img src="assets/bacteria.png" alt="Bacteria Bio Hazard" class="absolute -left-4 -bottom-4 w-20 h-20 object-contain opacity-20 pointer-events-none filter drop-shadow-[0_0_10px_rgba(16,185,129,0.3)]" />
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center relative z-10">
           
-          <!-- Left: Animated Circular Gauge -->
-          <div class="lg:col-span-4 flex flex-col items-center justify-center p-4 bg-slate-950/60 border border-slate-800/80 rounded-xl relative">
-            <span class="text-xs font-mono text-slate-400 mb-2 uppercase tracking-wider">Aggregated Threat Score</span>
+          <!-- Animated Circular Score Gauge -->
+          <div class="lg:col-span-4 flex flex-col items-center justify-center p-4 bg-black border border-emerald-900/60 rounded-xl">
+            <span class="text-xs font-mono text-emerald-400/80 mb-2 uppercase tracking-wider">AGGREGATED RISK SCORE</span>
             
             <div class="relative w-40 h-40 flex items-center justify-center">
               <svg class="w-full h-full transform -rotate-90" viewBox="0 0 120 120">
-                <!-- Background Ring -->
-                <circle cx="60" cy="60" r="50" class="text-slate-800" stroke-width="10" stroke="currentColor" fill="transparent"/>
-                <!-- Animated Progress Ring -->
+                <circle cx="60" cy="60" r="50" class="text-slate-900" stroke-width="10" stroke="currentColor" fill="transparent"/>
                 <circle id="gaugeRing" cx="60" cy="60" r="50" stroke-width="10" 
                         stroke-dasharray="314.15" stroke-dashoffset="314.15" 
                         stroke-linecap="round" fill="transparent"
                         class="transition-all duration-1000 ease-out"/>
               </svg>
               
-              <!-- Center Score Text -->
               <div class="absolute inset-0 flex flex-col items-center justify-center">
-                <span id="scoreValue" class="text-4xl font-extrabold tracking-tight font-mono">0</span>
-                <span class="text-[11px] font-mono text-slate-400">OUT OF 100</span>
+                <span id="scoreValue" class="text-4xl font-extrabold font-mono text-emerald-300">0</span>
+                <span class="text-[10px] font-mono text-slate-400">OUT OF 100</span>
               </div>
             </div>
 
             <div class="mt-3 flex items-center gap-2">
               <span class="text-xs font-mono text-slate-400">Confidence:</span>
-              <span id="confidenceBadge" class="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-slate-800 text-slate-200 border border-slate-700">HIGH</span>
+              <span id="confidenceBadge" class="text-xs font-mono font-semibold px-2.5 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800">HIGH</span>
             </div>
           </div>
 
-          <!-- Right: Classification Verdict & Executive Summary -->
+          <!-- Classification & Summary -->
           <div class="lg:col-span-8 space-y-4">
             
             <div class="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <span class="text-xs font-mono text-slate-400 uppercase tracking-widest">Heuristic Assessment Verdict</span>
-                <h3 id="classificationBadge" class="text-3xl font-extrabold tracking-tight mt-1 flex items-center gap-3">
+                <span class="text-xs font-mono text-slate-400 uppercase tracking-widest">VERDICT CLASSIFICATION</span>
+                <h3 id="classificationBadge" class="text-3xl font-extrabold tracking-tight mt-1 flex items-center gap-3 font-mono">
                   SAFE
                 </h3>
               </div>
@@ -228,27 +259,27 @@
             </div>
 
             <!-- App Metadata Grid -->
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-950/80 p-3 rounded-lg border border-slate-800/80 font-mono text-xs">
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-black p-3.5 rounded-xl border border-emerald-900/60 font-mono text-xs">
               <div>
                 <span class="text-slate-500 block text-[10px]">PACKAGE NAME</span>
-                <span id="metaPackage" class="text-slate-200 font-semibold truncate block">com.example.app</span>
+                <span id="metaPackage" class="text-emerald-200 font-semibold truncate block">com.example.app</span>
               </div>
               <div>
                 <span class="text-slate-500 block text-[10px]">APP NAME</span>
-                <span id="metaAppName" class="text-slate-200 font-semibold truncate block">Example App</span>
+                <span id="metaAppName" class="text-emerald-200 font-semibold truncate block">Example App</span>
               </div>
               <div>
                 <span class="text-slate-500 block text-[10px]">TARGET / MIN SDK</span>
-                <span id="metaSDK" class="text-slate-200 font-semibold block">API 31 / API 21</span>
+                <span id="metaSDK" class="text-emerald-200 font-semibold block">API 31 / API 21</span>
               </div>
               <div>
                 <span class="text-slate-500 block text-[10px]">FILE SIZE</span>
-                <span id="metaSize" class="text-slate-200 font-semibold block">2.4 MB</span>
+                <span id="metaSize" class="text-emerald-200 font-semibold block">2.4 MB</span>
               </div>
             </div>
 
-            <!-- Executive Summary Text -->
-            <div class="p-3.5 bg-slate-950/40 border border-slate-800 rounded-lg">
+            <!-- Executive Summary -->
+            <div class="p-3.5 bg-black/60 border border-emerald-900/60 rounded-lg">
               <p id="executiveSummary" class="text-xs text-slate-300 leading-relaxed font-sans">
                 Summary loading...
               </p>
@@ -260,36 +291,31 @@
 
       </div>
 
-      <!-- Tabbed Breakdown Navigation -->
-      <div class="border-b border-slate-800 flex overflow-x-auto no-scrollbar gap-2 pb-1">
-        <button onclick="switchTab('overview')" id="tab-overview" class="tab-btn active px-4 py-2 text-xs font-mono font-medium rounded-t-lg border-b-2 border-emerald-400 bg-slate-900 text-emerald-400 flex items-center gap-2 whitespace-nowrap">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+      <!-- TABBED BREAKDOWN NAVIGATION -->
+      <div class="border-b border-emerald-900/60 flex overflow-x-auto gap-2 pb-1 no-scrollbar">
+        <button onclick="switchTab('overview')" id="tab-overview" class="px-4 py-2 text-xs font-mono font-semibold rounded-t-lg border-b-2 border-emerald-400 bg-[#090e17] text-emerald-400 flex items-center gap-2 whitespace-nowrap">
           Threat Overview (<span id="countCritical">0</span>)
         </button>
-        <button onclick="switchTab('permissions')" id="tab-permissions" class="tab-btn px-4 py-2 text-xs font-mono font-medium rounded-t-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/50 flex items-center gap-2 whitespace-nowrap">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/></svg>
+        <button onclick="switchTab('permissions')" id="tab-permissions" class="px-4 py-2 text-xs font-mono font-medium rounded-t-lg border-b-2 border-transparent text-slate-400 hover:text-emerald-300 flex items-center gap-2 whitespace-nowrap">
           Permissions Audit (<span id="countPerms">0</span>)
         </button>
-        <button onclick="switchTab('api')" id="tab-api" class="tab-btn px-4 py-2 text-xs font-mono font-medium rounded-t-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/50 flex items-center gap-2 whitespace-nowrap">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+        <button onclick="switchTab('api')" id="tab-api" class="px-4 py-2 text-xs font-mono font-medium rounded-t-lg border-b-2 border-transparent text-slate-400 hover:text-emerald-300 flex items-center gap-2 whitespace-nowrap">
           API & Obfuscation
         </button>
-        <button onclick="switchTab('network')" id="tab-network" class="tab-btn px-4 py-2 text-xs font-mono font-medium rounded-t-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/50 flex items-center gap-2 whitespace-nowrap">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>
+        <button onclick="switchTab('network')" id="tab-network" class="px-4 py-2 text-xs font-mono font-medium rounded-t-lg border-b-2 border-transparent text-slate-400 hover:text-emerald-300 flex items-center gap-2 whitespace-nowrap">
           Network / C2 Endpoints (<span id="countEndpoints">0</span>)
         </button>
-        <button onclick="switchTab('remediation')" id="tab-remediation" class="tab-btn px-4 py-2 text-xs font-mono font-medium rounded-t-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/50 flex items-center gap-2 whitespace-nowrap">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <button onclick="switchTab('remediation')" id="tab-remediation" class="px-4 py-2 text-xs font-mono font-medium rounded-t-lg border-b-2 border-transparent text-slate-400 hover:text-emerald-300 flex items-center gap-2 whitespace-nowrap">
           Mitigation Advice
         </button>
       </div>
 
-      <!-- Tab Content Panels -->
-      <div id="tabPanels" class="bg-slate-900 border border-slate-800 rounded-xl p-5 min-h-[300px]">
+      <!-- TAB PANELS CONTAINER -->
+      <div id="tabPanels" class="bg-[#090e17] border border-emerald-900/60 rounded-xl p-5 min-h-[300px]">
         
         <!-- Tab 1: Threat Overview -->
         <div id="panel-overview" class="space-y-4">
-          <h4 class="text-xs font-mono text-slate-400 uppercase tracking-wider">Critical & High-Severity Threat Findings</h4>
+          <h4 class="text-xs font-mono text-emerald-400/80 uppercase tracking-wider">Critical & High-Severity Threat Findings</h4>
           <div id="findingsList" class="space-y-3">
             <!-- Dynamic Findings Cards -->
           </div>
@@ -297,36 +323,36 @@
 
         <!-- Tab 2: Permissions Audit -->
         <div id="panel-permissions" class="hidden space-y-4">
-          <h4 class="text-xs font-mono text-slate-400 uppercase tracking-wider">Dangerous Manifest Permissions & Threat Combinations</h4>
+          <h4 class="text-xs font-mono text-emerald-400/80 uppercase tracking-wider">Dangerous Manifest Permissions & Threat Combinations</h4>
           <div id="permissionsList" class="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <!-- Dynamic Dangerous Permissions -->
+            <!-- Dynamic Permissions -->
           </div>
         </div>
 
         <!-- Tab 3: API & Obfuscation -->
         <div id="panel-api" class="hidden space-y-5">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono">
             
-            <div class="bg-slate-950 p-4 rounded-lg border border-slate-800">
-              <span class="text-xs font-mono text-slate-400 block mb-1">PACKER DETECTION</span>
-              <span id="packerStatus" class="text-sm font-semibold font-mono text-slate-200">None Detected</span>
+            <div class="bg-black p-4 rounded-xl border border-emerald-900/60">
+              <span class="text-xs text-slate-400 block mb-1">PACKER DETECTION</span>
+              <span id="packerStatus" class="text-sm font-semibold text-emerald-200">None Detected</span>
             </div>
 
-            <div class="bg-slate-950 p-4 rounded-lg border border-slate-800">
-              <span class="text-xs font-mono text-slate-400 block mb-1">BYTECODE ENTROPY</span>
-              <span id="entropyLevel" class="text-sm font-semibold font-mono text-emerald-400">Normal (4.2 / 8.0)</span>
+            <div class="bg-black p-4 rounded-xl border border-emerald-900/60">
+              <span class="text-xs text-slate-400 block mb-1">BYTECODE ENTROPY</span>
+              <span id="entropyLevel" class="text-sm font-semibold text-emerald-400">Normal (4.2 / 8.0)</span>
             </div>
 
-            <div class="bg-slate-950 p-4 rounded-lg border border-slate-800">
-              <span class="text-xs font-mono text-slate-400 block mb-1">SUSPICIOUS APIS DETECTED</span>
-              <span id="apiCount" class="text-sm font-semibold font-mono text-amber-400">0 Calls</span>
+            <div class="bg-black p-4 rounded-xl border border-emerald-900/60">
+              <span class="text-xs text-slate-400 block mb-1">SUSPICIOUS APIS DETECTED</span>
+              <span id="apiCount" class="text-sm font-semibold text-amber-400">0 Calls</span>
             </div>
 
           </div>
 
           <div>
-            <h5 class="text-xs font-mono text-slate-400 uppercase mb-2">High-Risk Dalvik/ART API Invocations</h5>
-            <div id="suspiciousApisList" class="bg-slate-950 border border-slate-800 rounded-lg p-3 font-mono text-xs text-amber-300 space-y-1">
+            <h5 class="text-xs font-mono text-emerald-400/80 uppercase mb-2">High-Risk Dalvik/ART API Invocations</h5>
+            <div id="suspiciousApisList" class="bg-black border border-emerald-900/60 rounded-lg p-3 font-mono text-xs text-amber-300 space-y-1">
               <!-- Suspicious APIs list -->
             </div>
           </div>
@@ -334,15 +360,15 @@
 
         <!-- Tab 4: Network / C2 Endpoints -->
         <div id="panel-network" class="hidden space-y-4">
-          <h4 class="text-xs font-mono text-slate-400 uppercase tracking-wider">Hardcoded URLs, IPv4 Addresses & Command-and-Control (C2) Hooks</h4>
-          <div id="endpointsList" class="bg-slate-950 border border-slate-800 rounded-lg p-3 font-mono text-xs text-emerald-400 space-y-1 max-h-80 overflow-y-auto">
+          <h4 class="text-xs font-mono text-emerald-400/80 uppercase tracking-wider">Hardcoded URLs, IPv4 Addresses & Command-and-Control (C2) Hooks</h4>
+          <div id="endpointsList" class="bg-black border border-emerald-900/60 rounded-lg p-3 font-mono text-xs text-emerald-400 space-y-1 max-h-80 overflow-y-auto">
             <!-- Endpoints list -->
           </div>
         </div>
 
         <!-- Tab 5: Mitigation Advice -->
         <div id="panel-remediation" class="hidden space-y-4">
-          <h4 class="text-xs font-mono text-slate-400 uppercase tracking-wider">Security Team Mitigation & Installation Warning Guidance</h4>
+          <h4 class="text-xs font-mono text-emerald-400/80 uppercase tracking-wider">Security Team Remediation & Installation Guidance</h4>
           <div id="recommendationsList" class="space-y-2">
             <!-- Recommendations list -->
           </div>
@@ -355,38 +381,41 @@
   </main>
 
   <!-- Footer -->
-  <footer class="border-t border-slate-800/80 bg-slate-950 py-4 mt-auto text-xs text-slate-500 text-center font-mono">
+  <footer class="border-t border-emerald-900/60 bg-[#060a12] py-4 mt-auto text-xs text-slate-500 text-center font-mono relative z-10">
     <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-      <div>APK Sentinel &copy; 2026 Mobile Security Division. Abstract Static Reverse-Engineering Pipeline.</div>
-      <div class="text-slate-400">SHA-256 Verified Engine</div>
+      <div>apk-analyzer &copy; 2026 Mobile Security Division. Minimalist Black & Green Security Suite.</div>
+      <div class="text-emerald-400">SHA-256 Verified Engine</div>
     </div>
   </footer>
 
   <!-- JSON Export Modal -->
-  <div id="jsonModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-xl max-w-3xl w-full max-h-[80vh] flex flex-col shadow-2xl">
-      <div class="p-4 border-b border-slate-800 flex items-center justify-between">
-        <h3 class="text-sm font-mono font-semibold text-slate-200">Structured JSON Assessment Report</h3>
+  <div id="jsonModal" class="hidden fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-[#090e17] border border-emerald-800 rounded-xl max-w-3xl w-full max-h-[80vh] flex flex-col shadow-2xl">
+      <div class="p-4 border-b border-emerald-900 flex items-center justify-between">
+        <h3 class="text-sm font-mono font-semibold text-emerald-300">Structured JSON Security Report</h3>
         <button onclick="closeJSONModal()" class="text-slate-400 hover:text-slate-200">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
       </div>
-      <div class="p-4 flex-1 overflow-y-auto bg-slate-950">
+      <div class="p-4 flex-1 overflow-y-auto bg-black">
         <pre id="jsonContent" class="font-mono text-xs text-emerald-400 select-all"></pre>
       </div>
-      <div class="p-3 border-t border-slate-800 flex justify-end gap-2">
-        <button onclick="copyJSONToClipboard()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs font-mono text-slate-200 rounded">Copy JSON</button>
-        <button onclick="downloadJSONFile()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-xs font-mono text-slate-950 font-semibold rounded">Download .JSON</button>
+      <div class="p-3 border-t border-emerald-900 flex justify-end gap-2 font-mono text-xs">
+        <button onclick="copyJSONToClipboard()" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-slate-200 rounded border border-slate-700">Copy JSON</button>
+        <button onclick="downloadJSONFile()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-black font-bold rounded">Download .JSON</button>
       </div>
     </div>
   </div>
 
   <!-- JavaScript Core Engine -->
   <script>
-    // Global Report State
     let currentReport = null;
 
-    // Built-in Demo Scenarios matching prompt specifications
+    // Interactive Ladybug Alert
+    function popLadybugAlert() {
+      alert("🐞 Ladybug Security Patrol: Scanning memory & byte streams! All malware signatures flagged.");
+    }
+
     const DEMO_SCENARIOS = {
       safe: {
         app_metadata: {
@@ -472,20 +501,13 @@
               indicator: "Command-and-Control (C2) Endpoint Detected",
               description: "Hardcoded network endpoints contain known dynamic C2 and Telegram bot drop endpoints: https://api.telegram.org/bot987654321/sendMessage",
               severity: "Critical"
-            },
-            {
-              category: "Certificate",
-              indicator: "Debug Certificate Signed Package",
-              description: "APK is signed with a generic Android Debug test certificate.",
-              severity: "High"
             }
           ],
           dangerous_permissions: [
             { name: "android.permission.BIND_ACCESSIBILITY_SERVICE", reason: "Automated keylogging and overlay injection." },
             { name: "android.permission.SYSTEM_ALERT_WINDOW", reason: "System-level phishing overlays." },
             { name: "android.permission.RECEIVE_BOOT_COMPLETED", reason: "Boot persistence daemon." },
-            { name: "android.permission.SEND_SMS", reason: "SMS 2FA OTP interception and premium fraud." },
-            { name: "android.permission.READ_SMS", reason: "Reading sensitive bank verification SMS." }
+            { name: "android.permission.SEND_SMS", reason: "SMS 2FA OTP interception and premium fraud." }
           ],
           suspicious_apis_and_calls: [
             "dalvik.system.DexClassLoader",
@@ -540,19 +562,12 @@
               indicator: "Native Shell Execution & SU Binary Access",
               description: "Code contains invocations to /system/bin/su and Runtime.exec for privilege escalation and root checks.",
               severity: "High"
-            },
-            {
-              category: "Bytecode",
-              indicator: "Disguised Asset Container",
-              description: "Resource file 'assets/wallpaper.png' contains a hidden secondary ELF shared library payload.",
-              severity: "Critical"
             }
           ],
           dangerous_permissions: [
             { name: "android.permission.RECORD_AUDIO", reason: "Covert background microphone eavesdropping." },
             { name: "android.permission.ACCESS_FINE_LOCATION", reason: "GPS tracking of victim location." },
-            { name: "android.permission.READ_CONTACTS", reason: "Exfiltrating full contact lists." },
-            { name: "android.permission.READ_CALL_LOG", reason: "Monitoring phone call history." }
+            { name: "android.permission.READ_CONTACTS", reason: "Exfiltrating full contact lists." }
           ],
           suspicious_apis_and_calls: [
             "java.lang.Runtime.exec",
@@ -576,20 +591,16 @@
       }
     };
 
-    // Load Scenario Function
     function loadScenario(type) {
       const data = DEMO_SCENARIOS[type];
       if (!data) return;
-      
       runAnalysisSimulation(data);
     }
 
-    // Handle Local APK File Upload
     function handleFileSelect(event) {
       const file = event.target.files[0];
       if (!file) return;
 
-      // Extract basic real file metadata
       const simulatedData = {
         app_metadata: {
           package_name: file.name.replace(".apk", "").toLowerCase().replace(/[^a-z0-9\.]/g, "."),
@@ -602,7 +613,7 @@
           sha256: generatePseudoHash(file.name + file.size)
         },
         verdict: {
-          risk_score: Math.floor(Math.random() * 30) + 10,
+          risk_score: Math.floor(Math.random() * 25) + 10,
           classification: "Safe",
           confidence_level: "High",
           summary: "Uploaded APK scanned successfully. No high-confidence malicious traits detected."
@@ -631,11 +642,9 @@
       return (hex + "a1b2c3d4e5f67890a1b2c3d4e5f67890a1b2c3d4e5f67890").substring(0, 64);
     }
 
-    // Step-by-Step Simulated Live Scanning Animation
     function runAnalysisSimulation(reportData) {
       currentReport = reportData;
 
-      // Reset UI Elements
       document.getElementById("progressSection").classList.remove("hidden");
       document.getElementById("resultsSection").classList.add("hidden");
       document.getElementById("progressBar").style.width = "0%";
@@ -672,16 +681,14 @@
           setTimeout(() => {
             document.getElementById("progressSection").classList.add("hidden");
             renderResults(reportData);
-          }, 400);
+          }, 350);
         }
-      }, 250);
+      }, 220);
     }
 
-    // Render Scanned Results into UI
     function renderResults(data) {
       document.getElementById("resultsSection").classList.remove("hidden");
       document.getElementById("exportBtn").disabled = false;
-      document.getElementById("printBtn").disabled = false;
 
       // Metadata
       document.getElementById("metaPackage").innerText = data.app_metadata.package_name;
@@ -698,29 +705,22 @@
       const offset = circumference - (score / 100) * circumference;
       gaugeRing.style.strokeDashoffset = offset;
 
-      // Gauge Color & Classification Styling
-      const card = document.getElementById("verdictCard");
       const badge = document.getElementById("classificationBadge");
       const pill = document.getElementById("verdictPill");
 
-      card.classList.remove("glow-safe", "glow-suspicious", "glow-malicious");
-
       if (data.verdict.classification === "Malicious") {
-        gaugeRing.style.stroke = "#ef4444"; // Red
+        gaugeRing.style.stroke = "#ef4444";
         badge.innerHTML = `<span class="text-rose-500">MALICIOUS</span>`;
-        badge.className = "text-3xl font-extrabold tracking-tight mt-1 flex items-center gap-3 text-rose-500";
+        badge.className = "text-3xl font-extrabold tracking-tight mt-1 flex items-center gap-3 text-rose-500 font-mono";
         pill.className = "px-4 py-1.5 rounded-full text-xs font-mono font-bold uppercase tracking-wider bg-rose-950 text-rose-300 border border-rose-600";
-        card.classList.add("glow-malicious");
       } else if (data.verdict.classification === "Suspicious") {
-        gaugeRing.style.stroke = "#f59e0b"; // Yellow
+        gaugeRing.style.stroke = "#f59e0b";
         badge.innerHTML = `<span class="text-amber-400">SUSPICIOUS</span>`;
         pill.className = "px-4 py-1.5 rounded-full text-xs font-mono font-bold uppercase tracking-wider bg-amber-950 text-amber-300 border border-amber-600";
-        card.classList.add("glow-suspicious");
       } else {
-        gaugeRing.style.stroke = "#10b981"; // Emerald Green
+        gaugeRing.style.stroke = "#10b981";
         badge.innerHTML = `<span class="text-emerald-400">SAFE</span>`;
         pill.className = "px-4 py-1.5 rounded-full text-xs font-mono font-bold uppercase tracking-wider bg-emerald-950 text-emerald-300 border border-emerald-600";
-        card.classList.add("glow-safe");
       }
 
       document.getElementById("verdictPill").innerText = `VERDICT: ${data.verdict.classification.toUpperCase()}`;
@@ -740,22 +740,22 @@
       const findingsList = document.getElementById("findingsList");
       findingsList.innerHTML = "";
       if (findings.length === 0) {
-        findingsList.innerHTML = `<div class="p-4 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-400">No critical threat findings detected. Application behavior matches standard baseline.</div>`;
+        findingsList.innerHTML = `<div class="p-4 rounded-lg bg-black border border-emerald-900/60 text-xs text-slate-400">No critical threat findings detected. Application behavior matches standard baseline.</div>`;
       } else {
         findings.forEach(f => {
           const div = document.createElement("div");
-          div.className = "p-3.5 rounded-lg bg-slate-950 border border-slate-800 space-y-1";
+          div.className = "p-3.5 rounded-lg bg-black border border-emerald-900/60 space-y-1";
           
-          let sevColor = "bg-slate-800 text-slate-300 border-slate-700";
-          if (f.severity === "Critical") sevColor = "bg-rose-950 text-rose-300 border-rose-700";
-          if (f.severity === "High") sevColor = "bg-amber-950 text-amber-300 border-amber-700";
+          let sevColor = "bg-emerald-950 text-emerald-300 border-emerald-800";
+          if (f.severity === "Critical") sevColor = "bg-rose-950 text-rose-300 border-rose-800";
+          if (f.severity === "High") sevColor = "bg-amber-950 text-amber-300 border-amber-800";
 
           div.innerHTML = `
-            <div class="flex items-center justify-between">
-              <span class="font-mono text-xs font-semibold text-slate-200">${f.indicator}</span>
-              <span class="text-[10px] font-mono px-2 py-0.5 rounded border ${sevColor}">${f.severity}</span>
+            <div class="flex items-center justify-between font-mono">
+              <span class="text-xs font-semibold text-emerald-200">${f.indicator}</span>
+              <span class="text-[10px] px-2 py-0.5 rounded border ${sevColor}">${f.severity}</span>
             </div>
-            <p class="text-xs text-slate-400">${f.description}</p>
+            <p class="text-xs text-slate-300">${f.description}</p>
           `;
           findingsList.appendChild(div);
         });
@@ -765,11 +765,11 @@
       const permissionsList = document.getElementById("permissionsList");
       permissionsList.innerHTML = "";
       if (perms.length === 0) {
-        permissionsList.innerHTML = `<div class="col-span-2 p-4 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-400">No high-risk dangerous permissions declared in manifest.</div>`;
+        permissionsList.innerHTML = `<div class="col-span-2 p-4 rounded-lg bg-black border border-emerald-900/60 text-xs text-slate-400">No high-risk dangerous permissions declared in manifest.</div>`;
       } else {
         perms.forEach(p => {
           const div = document.createElement("div");
-          div.className = "p-3 rounded-lg bg-slate-950 border border-slate-800 font-mono text-xs space-y-1";
+          div.className = "p-3 rounded-lg bg-black border border-emerald-900/60 font-mono text-xs space-y-1";
           div.innerHTML = `
             <div class="text-rose-400 font-semibold truncate">${p.name}</div>
             <div class="text-[11px] text-slate-400 font-sans">${p.reason}</div>
@@ -797,14 +797,13 @@
       const recList = document.getElementById("recommendationsList");
       const recs = data.recommendations || [];
       recList.innerHTML = recs.map(r => `
-        <div class="p-3 bg-slate-950 border border-slate-800 rounded-lg text-xs text-slate-300 flex items-start gap-2">
-          <svg class="w-4 h-4 text-emerald-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <div class="p-3 bg-black border border-emerald-900/60 rounded-lg text-xs text-slate-300 flex items-start gap-2 font-mono">
+          <span class="text-emerald-400 shrink-0">✓</span>
           <span>${r}</span>
         </div>
       `).join("");
     }
 
-    // Tab Switcher
     function switchTab(tabId) {
       const tabs = ["overview", "permissions", "api", "network", "remediation"];
       tabs.forEach(t => {
@@ -812,16 +811,15 @@
         const panel = document.getElementById(`panel-${t}`);
         
         if (t === tabId) {
-          btn.className = "tab-btn active px-4 py-2 text-xs font-mono font-medium rounded-t-lg border-b-2 border-emerald-400 bg-slate-900 text-emerald-400 flex items-center gap-2 whitespace-nowrap";
+          btn.className = "px-4 py-2 text-xs font-mono font-semibold rounded-t-lg border-b-2 border-emerald-400 bg-[#090e17] text-emerald-400 flex items-center gap-2 whitespace-nowrap";
           panel.classList.remove("hidden");
         } else {
-          btn.className = "tab-btn px-4 py-2 text-xs font-mono font-medium rounded-t-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/50 flex items-center gap-2 whitespace-nowrap";
+          btn.className = "px-4 py-2 text-xs font-mono font-medium rounded-t-lg border-b-2 border-transparent text-slate-400 hover:text-emerald-300 flex items-center gap-2 whitespace-nowrap";
           panel.classList.add("hidden");
         }
       });
     }
 
-    // JSON Export Modal Controls
     function exportJSONReport() {
       if (!currentReport) return;
       document.getElementById("jsonContent").innerText = JSON.stringify(currentReport, null, 2);
@@ -846,7 +844,7 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `apk_sentinel_${currentReport.app_metadata.package_name}.json`;
+      a.download = `apk_analyzer_${currentReport.app_metadata.package_name}.json`;
       a.click();
       URL.revokeObjectURL(url);
     }
