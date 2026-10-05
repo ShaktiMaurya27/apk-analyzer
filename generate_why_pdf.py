@@ -17,7 +17,6 @@ def build_pdf():
 
     styles = getSampleStyleSheet()
 
-    # Custom styles
     title_style = ParagraphStyle(
         'DocTitle',
         parent=styles['Normal'],
@@ -101,13 +100,13 @@ def build_pdf():
     story = []
 
     # Title & Subtitle
-    story.append(Paragraph("APK SENTINEL — Technical Architecture & Library Rationale", title_style))
+    story.append(Paragraph("apk-analyzer — Technical Architecture & Library Rationale", title_style))
     story.append(Paragraph("Why Specific Libraries Were Chosen & Viva / Interview FAQ in Hinglish", subtitle_style))
     story.append(HRFlowable(width="100%", thickness=1.5, color=colors.HexColor('#10b981'), spaceAfter=12))
 
     # Section 1: Library & Architecture Justification Table
     story.append(Paragraph("1. Library Selection & Rejection Matrix", h2_style))
-    story.append(Paragraph("The table below details why specific Python libraries and frameworks were selected for the APK Sentinel static reverse-engineering pipeline and why alternative tools were rejected.", body_style))
+    story.append(Paragraph("The table below details why specific Python libraries and frameworks were selected for the apk-analyzer static reverse-engineering pipeline and why alternative tools were rejected.", body_style))
 
     table_data = [
         [
@@ -184,7 +183,7 @@ def build_pdf():
         ("Q4: Risk Score 0 se 100 kaise calculate hota hai?",
          "Answer: Risk Score har phase ke findings ke weights ko calculate karke aggregation karta hai: Critical Findings (C2 endpoints, Accessibility Service abuse, Banking Trojan Overlay signature, DexClassLoader + Disguised assets) ko +25 to +35 points; High Findings (Debug certs, Unprotected Boot Receivers, Shell execution) ko +20 points; Dangerous Permissions ko +5 points per permission (capped at 25); aur Packing/High Entropy ko +15 points. Score 0-39 ko Safe, 40-69 ko Suspicious, aur 70-100 ko Malicious categorize kiya jata hai."),
         
-        ("Q5: Web Interface (APK Sentinel) offline kaise kaam karta hai?",
+        ("Q5: Web Interface offline kaise kaam karta hai?",
          "Answer: Web UI ko single-file HTML5 format me Tailwind CSS CDN aur inline JavaScript logic ke saath banaya gaya hai. Ye user ke browser me run hota hai, jisme JSZip engine binary APKs ko client-side unpack karta hai aur simulated/live progress logging ke sath interactive risk meter gauge aur JSON report generation render karta hai."),
         
         ("Q6: What are dangerous permission combinations in Android security?",

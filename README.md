@@ -1,28 +1,28 @@
-# APK SENTINEL — Android APK Static Security Analysis Engine
+# APK Analyzer (`apk-analyzer`)
 
-> **A 7-Phase Static & Heuristic Reverse-Engineering Engine & Web Analyzer for Mobile Malware Detection**
-
----
-
-## 🚀 Overview
-
-**APK Sentinel** is an automated static security analysis engine and mobile malware detection framework designed for Android Application Packages (`.apk`). 
-
-It performs pure static reverse-engineering, binary Android XML (`AndroidManifest.xml`) parsing, Dalvik/ART bytecode inspection, network endpoint harvesting, and cryptographic certificate validation to quantify threat levels and generate a structured JSON security assessment report—**all without executing code on a live device**.
+> **Android Application Packages (APKs) Static & Heuristic Security Analysis Engine**
 
 ---
 
-## 🛠️ Architecture & 7-Phase Execution Pipeline
+## 📌 Overview
 
-| Phase | Module Name | Primary Responsibilities |
+**`apk-analyzer`** is a comprehensive, pure static security analysis and reverse-engineering engine for Android Application Packages (`.apk`).
+
+It evaluates declared and used permissions, parses binary `AndroidManifest.xml` files, inspects Dalvik/ART DEX bytecode, extracts hardcoded network URLs/IPs/C2 signatures, and validates X.509 signing certificates to compute an aggregated 0–100 Risk Score—**without executing code on a live device**.
+
+---
+
+## 🛠️ Pipeline Architecture & 7 Evaluation Phases
+
+| Phase | Module Name | Core Functionality |
 | :--- | :--- | :--- |
-| **Phase 1** | `ingestion.py` | Container validation, SHA-256 digest computation, file size calculation, and archive asset extraction. |
-| **Phase 2** | `axml.py` & `manifest_auditor.py` | Zero-dependency binary AXML string pool decoding, metadata extraction (`package_name`, `target_sdk`), dangerous permission identification, and threat permission combination detection. |
-| **Phase 3** | `component_inspector.py` | Component enumeration (Activities, Services, Receivers, Providers), exported state resolution, unprotected boot receiver checks, and headless background architecture detection. |
-| **Phase 4** | `bytecode_analyzer.py` | Shannon Entropy calculation ($H \in [0, 8]$), commercial packer signature matching (Qihoo 360, Bangcle, Secneo, Legu, Ijiami), high-risk API extraction (`DexClassLoader`, `Runtime.exec`, reflection), and disguised asset discovery. |
-| **Phase 5** | `network_cert_analyzer.py` | URL/IPv4 string extraction, unencrypted HTTP warnings, Command-and-Control (C2) / dynamic DNS / Telegram bot drop detection, and v1/v2/v3 signature scheme & debug certificate validation. |
-| **Phase 6** | `scoring_engine.py` | Composite 0–100 threat score calculation, verdict classification (`Safe`, `Suspicious`, `Malicious`), confidence evaluation, and executive summary/mitigation synthesis. |
-| **Phase 7** | `pipeline.py` & `main.py` | Complete pipeline orchestration, Pydantic schema validation, CLI execution, and formatted JSON report generation. |
+| **Phase 1** | `ingestion.py` | Validates `.apk` ZIP archive structure, computes SHA-256 digest, reads file size, and extracts target assets (`AndroidManifest.xml`, `classes*.dex`, META-INF signatures). |
+| **Phase 2** | `axml.py` & `manifest_auditor.py` | Uses pure-Python binary AXML decoder to extract package metadata (`package_name`, `version_name`, `target_sdk`, `min_sdk`), audit dangerous permissions, and detect lethal permission combinations (Overlay trojans, Spyware exfiltration, SMS 2FA interception). |
+| **Phase 3** | `component_inspector.py` | Enumerates Activities, Services, Receivers, and Content Providers. Resolves exported states and flags unprotected exposed entry points, boot broadcast receivers (`BOOT_COMPLETED`), and headless background architectures. |
+| **Phase 4** | `bytecode_analyzer.py` | Computes Shannon Entropy ($H \in [0.0, 8.0]$) across DEX byte streams, detects commercial packers (Qihoo 360 Jiagu, Bangcle, Secneo, Legu, Ijiami), flags suspicious API calls (`DexClassLoader`, `Runtime.exec`, reflection), and discovers disguised asset containers. |
+| **Phase 5** | `network_cert_analyzer.py` | Extracts hardcoded URLs and IPv4 addresses, flags unencrypted HTTP calls, detects C2 / dynamic DNS / Telegram bot exfiltration endpoints, and verifies v1 JAR & v2/v3 signature scheme blocks and debug certificates. |
+| **Phase 6** | `scoring_engine.py` | Computes composite Risk Score (0–100), classifies application (`Safe`: 0-39, `Suspicious`: 40-69, `Malicious`: 70-100), evaluates confidence level (`Low`, `Medium`, `High`), and synthesizes executive summaries & remediation guidelines. |
+| **Phase 7** | `pipeline.py` & `main.py` | Orchestrates the end-to-end 7-phase analysis, enforces Pydantic schema compliance, provides CLI execution, and exports structured JSON reports. |
 
 ---
 
@@ -30,18 +30,18 @@ It performs pure static reverse-engineering, binary Android XML (`AndroidManifes
 
 ```
 apk-analyzer/
-├── apk_analyzer/             # Core 7-Phase Security Engine Modules
+├── apk_analyzer/             # Core 7-Phase Analysis Package
 │   ├── __init__.py
 │   ├── axml.py               # Pure-Python Binary Android XML Parser
-│   ├── bytecode_analyzer.py  # Entropy, Packers & DEX API Scanner
-│   ├── component_inspector.py# Component Export & Intent Inspector
-│   ├── ingestion.py          # Container Validation & Ingestion
-│   ├── manifest_auditor.py   # Manifest Metadata & Permission Auditor
+│   ├── bytecode_analyzer.py  # Entropy, Packer & DEX API Scanner
+│   ├── component_inspector.py# Component Export & Intent Auditor
+│   ├── ingestion.py          # Container Validation & Asset Extractor
+│   ├── manifest_auditor.py   # Manifest & Permission Auditor
 │   ├── network_cert_analyzer.py # Network, C2 Endpoints & Cert Auditor
-│   ├── pipeline.py           # 7-Phase Pipeline Orchestrator
-│   ├── schema.py             # Pydantic JSON Output Specifications
+│   ├── pipeline.py           # 7-Phase Analysis Pipeline Integrator
+│   ├── schema.py             # Pydantic Output Specification Schemas
 │   └── scoring_engine.py     # 0-100 Risk Score & Classification Engine
-├── tests/                    # Unit & Integration Test Suites (14/14 Passed)
+├── tests/                    # Complete Test Suite (14/14 Tests Passing)
 │   ├── test_phase1.py
 │   ├── test_phase2.py
 │   ├── test_phase3.py
@@ -49,63 +49,64 @@ apk-analyzer/
 │   ├── test_phase5.py
 │   ├── test_phase6.py
 │   └── test_e2e.py
-├── index.html                # Single-Page Cyber Web UI (APK Sentinel)
-├── main.py                   # CLI Execution Entry Point
-├── generate_why_pdf.py       # ReportLab PDF Generator script for WHY.pdf
+├── index.html                # Responsive Web Interface (Drag-and-Drop & Mobile Picker)
+├── main.py                   # Command Line Interface (CLI) Entry Point
+├── generate_why_pdf.py       # ReportLab PDF Generator Script for WHY.pdf
 ├── WHY.md                    # Detailed Technical Rationale Document
-├── WHY.pdf                   # Generated PDF Documentation
-└── README.md                 # Complete Project Manual & Hinglish FAQ
+├── WHY.pdf                   # Generated Technical Justification PDF
+└── README.md                 # Complete Technical Manual & Hinglish FAQ
 ```
 
 ---
 
-## ⚡ Quick Start Guide
+## ⚡ Quick Start & Usage
 
-### 1. Requirements & Setup
-- **Python Version:** Python 3.10+ (Tested on Python 3.12)
-- **Dependencies:** Install Pydantic and ReportLab (optional for PDF generation)
-  ```bash
-  pip install pydantic reportlab
-  ```
+### 1. Installation
+Install required Python packages:
+```bash
+pip install pydantic reportlab
+```
 
-### 2. Command Line Execution (CLI)
-Run static analysis on any `.apk` file:
+### 2. Command Line Interface (CLI)
+Analyze any Android APK file:
 ```bash
 python main.py path/to/sample.apk
 ```
 
-To save the structured JSON report to a file:
+Save the JSON security assessment report to a file:
 ```bash
-python main.py path/to/sample.apk -o report.json
+python main.py path/to/sample.apk -o output_report.json
 ```
 
 ### 3. Run Test Suite
-Execute end-to-end integration and unit tests:
+Run unit tests across all 7 phases:
 ```bash
 python -m unittest discover tests
 ```
 
-### 4. Interactive Web Interface (`index.html`)
-Open `index.html` in any modern web browser to access **APK Sentinel**:
-- Drag-and-drop `.apk` files or use mobile touch selectors.
-- Run instant demo scenarios (Clean App, Anubis Banking Trojan, Pegasus Spyware).
-- View live terminal progress logs, radial threat gauge, tabbed breakdown, and JSON export.
+### 4. Responsive Web Interface (`index.html`)
+Open `index.html` in any browser to launch the web interface:
+- **Desktop Drag & Drop Zone** + **Mobile Touch File Selector**.
+- Real-time step-by-step progress logging.
+- Animated circular threat score gauge and tabbed breakdown (Threat Overview, Permissions, API Heuristics, Network/C2, Remediation).
+- **3 Instant Demo Scenarios** (Clean Utility App, Anubis Banking Trojan, Pegasus Spyware).
+- Actionable JSON report copy/download and print view.
 
 ---
 
-## 📑 Structured JSON Output Schema
+## 📑 Structured JSON Output Format
 
-Analysis outputs conform strictly to the following JSON schema:
+The output strictly complies with the requested specification:
 
 ```json
 {
   "app_metadata": {
-    "package_name": "com.trojan.banker",
-    "app_name": "BankerTrojan",
-    "version_name": "1.0",
-    "version_code": "1",
-    "target_sdk": 31,
-    "min_sdk": 21,
+    "package_name": "com.system.flashplayer.update",
+    "app_name": "FlashPlayer Update Service",
+    "version_name": "2.1.0",
+    "version_code": "21",
+    "target_sdk": 28,
+    "min_sdk": 19,
     "file_size_bytes": 1842900,
     "sha256": "7b8a9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b"
   },
@@ -151,7 +152,7 @@ Analysis outputs conform strictly to the following JSON schema:
 
 ---
 
-## ❓ Viva & Interview Questions with Hinglish Answers
+## ❓ Frequently Asked Questions (Viva / Interview Q&A in Hinglish)
 
 ### Q1: Is project me `androguard` ya `apktool` kyun use nahi kiya?
 **Answer (Hinglish):**
@@ -174,7 +175,7 @@ Risk Score har phase ke findings ke weights ko calculate karke aggregation karta
 - **Packing / High Entropy**: **+15 points**.
 Score 0–39 ko **Safe**, 40–69 ko **Suspicious**, aur 70–100 ko **Malicious** categorize kiya jata hai.
 
-### Q5: Web Interface (APK Sentinel) offline kaise kaam karta hai?
+### Q5: Web Interface offline kaise kaam karta hai?
 **Answer (Hinglish):**
 Web UI ko single-file HTML5 format me Tailwind CSS CDN aur inline JavaScript logic ke saath banaya gaya hai. Ye user ke browser me run hota hai, jisme JSZip engine binary APKs ko client-side unpack karta hai aur simulated/live progress logging ke sath interactive risk meter gauge aur JSON report generation render karta hai.
 
@@ -187,5 +188,5 @@ Single permissions dangerous ho sakti hain, lekin combinations zyada lethal hoti
 
 ---
 
-## 📜 License & Citation
-Developed for Mobile Security Research & Static Malware Reverse-Engineering Analysis.
+## 📜 License
+Developed for Android Mobile Security & Static Reverse-Engineering Assessment (`apk-analyzer`).
