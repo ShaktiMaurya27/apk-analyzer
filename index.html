@@ -940,6 +940,89 @@
 
     // Initialize Default Theme (Light Mode)
     applyTheme();
+
+    // Random Moving Ladybugs Character Controller
+    (function initLadybugCrawlers() {
+      const isMobile = window.innerWidth < 640;
+      const minBugs = 2;
+      const maxBugs = isMobile ? 5 : 10;
+      const bugCount = Math.floor(Math.random() * (maxBugs - minBugs + 1)) + minBugs;
+
+      const container = document.createElement("div");
+      container.id = "ladybugCrawlerContainer";
+      container.style.cssText = "position:fixed;inset:0;pointer-events:none;z-index:9999;overflow:hidden;";
+      document.body.appendChild(container);
+
+      const bugs = [];
+
+      function createLadybug() {
+        const img = document.createElement("img");
+        img.src = "assets/ladybug_transparent.png";
+        img.alt = "ladybug character";
+        const size = Math.floor(Math.random() * 8) + 24; // 24px to 32px little ladybug size
+        img.style.cssText = `position:absolute;width:${size}px;height:${size}px;top:0;left:0;will-change:transform;pointer-events:none;`;
+        container.appendChild(img);
+
+        const x = Math.random() * (window.innerWidth - 40);
+        const y = Math.random() * (window.innerHeight - 40);
+        
+        return {
+          element: img,
+          x: x,
+          y: y,
+          targetX: x,
+          targetY: y,
+          speed: Math.random() * 0.8 + 0.6,
+          angle: 0,
+          pauseTicks: 0,
+          size: size
+        };
+      }
+
+      for (let i = 0; i < bugCount; i++) {
+        bugs.push(createLadybug());
+      }
+
+      function pickNewTarget(bug) {
+        bug.targetX = Math.random() * (window.innerWidth - bug.size - 20);
+        bug.targetY = Math.random() * (window.innerHeight - bug.size - 20);
+        bug.pauseTicks = Math.floor(Math.random() * 60);
+      }
+
+      function animate() {
+        bugs.forEach(bug => {
+          if (bug.pauseTicks > 0) {
+            bug.pauseTicks--;
+            return;
+          }
+
+          const dx = bug.targetX - bug.x;
+          const dy = bug.targetY - bug.y;
+          const dist = Math.hypot(dx, dy);
+
+          if (dist < 4) {
+            pickNewTarget(bug);
+          } else {
+            const targetAngle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
+            
+            let diff = (targetAngle - bug.angle) % 360;
+            if (diff > 180) diff -= 360;
+            if (diff < -180) diff += 360;
+            bug.angle += diff * 0.15;
+
+            bug.x += (dx / dist) * bug.speed;
+            bug.y += (dy / dist) * bug.speed;
+
+            bug.element.style.transform = `translate3d(${bug.x}px, ${bug.y}px, 0) rotate(${bug.angle}deg)`;
+          }
+        });
+
+        requestAnimationFrame(animate);
+      }
+
+      bugs.forEach(pickNewTarget);
+      requestAnimationFrame(animate);
+    })();
   </script>
 
 </body>
