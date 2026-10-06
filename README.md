@@ -2,6 +2,10 @@
 
 > **Android Application Packages (APKs) Static & Heuristic Security Analysis Engine**
 
+[![Live Web Interface](https://img.shields.io/badge/Live_Demo-GitHub_Pages-0284c7?style=for-the-badge&logo=github)](https://shaktimaurya27.github.io/apk-analyzer/)
+
+🌐 **Live Web Application**: [https://shaktimaurya27.github.io/apk-analyzer/](https://shaktimaurya27.github.io/apk-analyzer/)
+
 ---
 
 ## 📌 Overview
