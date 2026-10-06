@@ -1210,7 +1210,8 @@
           }, 300);
         };
 
-        img.addEventListener("click", killBug);
+        img.addEventListener("pointerdown", killBug);
+        img.addEventListener("mousedown", killBug);
         img.addEventListener("touchstart", (e) => { e.preventDefault(); killBug(e); }, { passive: false });
 
         return bug;
